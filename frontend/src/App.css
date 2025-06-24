@@ -1,0 +1,107 @@
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: #f3f4f6;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 600px;
+  margin: 30px auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+}
+
+form input, form textarea, form button {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+form button {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+form button:hover {
+  background-color: #4338ca;
+}
+
+.task-section {
+  margin-top: 2rem;
+}
+
+.task-section h3 {
+  color: #4b5563;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.5rem;
+}
+
+.task-card {
+  background: #f9fafb;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  border-left: 5px solid #a5b4fc;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-card.completed {
+  border-left-color: #34d399;
+  background-color: #ecfdf5;
+}
+
+.task-card.missing {
+  border-left-color: #f87171;
+  background-color: #fef2f2;
+}
+
+.task-card.pending {
+  border-left-color: #facc15;
+  background-color: #fefce8;
+}
+
+.task-card button {
+  margin-left: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+/* Navbar Styling */
+.navbar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #4f46e5;
+  padding: 1rem;
+  color: white;
+  border-bottom: 2px solid #333;
+}
+
+.navbar a, .navbar button {
+  color: white;
+  margin-right: 1rem;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.navbar a:hover, .navbar button:hover {
+  text-decoration: underline;
+}
