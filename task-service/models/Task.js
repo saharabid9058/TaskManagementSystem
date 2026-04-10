@@ -1,36 +1,22 @@
 const mongoose = require('mongoose');
 
-const checklistItemSchema = new mongoose.Schema({
-  item: String,
-  checked: { type: Boolean, default: false }
-});
+const checklistItemSchema = new mongoose.Schema({ item: String, checked: { type: Boolean, default: false } });
 
 const taskSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: String,
   dueDate: { type: Date, required: true },
-  checklist: [checklistItemSchema],  
+  checklist: [checklistItemSchema],
   userId: { type: String, required: true },
-  status: { 
-    type: String, 
-    enum: ['pending', 'completed', 'missed'], 
-    default: 'pending' 
-  }
+  status: { type: String, enum: ['pending', 'completed', 'missed'], default: 'pending' },
+  aiRisk: { type: String, enum: ['low', 'medium', 'high'], default: 'low' },
+  aiPriority: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' },
+  aiSuggestion: String
 }, { timestamps: true });
 
-
-taskSchema.pre('save', function (next) {
-  if (this.status !== 'completed' && new Date(this.dueDate) < new Date()) {
-    this.status = 'missed';
-  }
-  next();
-});
-
-taskSchema.statics.updateMissedTasks = async function () {
-  await this.updateMany(
-    { status: { $ne: 'completed' }, dueDate: { $lt: new Date() } },
-    { $set: { status: 'missed' } }
-  );
+taskSchema.statics.updateMissedTasks = async function() {
+  const now = new Date();
+  await this.updateMany({ dueDate: { $lt: now }, completed: false }, { status: 'missed' });
 };
 
 module.exports = mongoose.model('Task', taskSchema);

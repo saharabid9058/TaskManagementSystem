@@ -1,9 +1,12 @@
+require('dotenv').config(); 
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const Task = require('./models/Task');
 const cors = require('cors');
+const { analyzeTask } = require('./ai');
+
 
 dotenv.config();
 
@@ -45,25 +48,28 @@ const verifyToken = (req, res, next) => {
 app.post('/api/tasks', verifyToken, async (req, res) => {
   try {
     const { title, dueDate, description, checklist } = req.body;
-    
-    const newTask = new Task({ 
-      title, 
-      dueDate, 
-      description, 
-      checklist: checklist || [], 
-      userId: req.userId 
+
+    const aiResult = await analyzeTask(title, description, dueDate);
+
+    const newTask = new Task({
+      title,
+      dueDate,
+      description,
+      checklist: checklist || [],
+      userId: req.userId,
+      aiPriority: aiResult.priority,
+      aiRisk: aiResult.risk,
+      aiSuggestion: aiResult.suggestion
     });
-    
+
     await newTask.save();
     res.status(201).json(newTask);
   } catch (error) {
-    console.error("Error creating task:", error);
-    res.status(500).json({ 
-      message: "Server error",
-      error: error.message 
-    });
+    console.error("AI Task creation error:", error);
+    res.status(500).json({ message: "AI processing failed" });
   }
 });
+
 
 app.get('/api/tasks/:id', verifyToken, async (req, res) => {
   try {
@@ -143,3 +149,9 @@ mongoose.connect(process.env.MONGODB_URI, {
   console.log('✅ Connected to MongoDB');
   app.listen(PORT, () => console.log(`🚀 Task service running on port ${PORT}`));
 }).catch(err => console.error('❌ MongoDB error:', err));
+
+setInterval(async () => {
+  await Task.updateMissedTasks();
+  console.log('AI checked overdue tasks');
+}, 60 * 60 * 1000); // every hour
+

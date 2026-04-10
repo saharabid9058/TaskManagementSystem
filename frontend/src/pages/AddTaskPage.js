@@ -6,11 +6,10 @@ const AddTaskPage = ({ token }) => {
   const [task, setTask] = useState({ title: "", description: "", dueDate: "" });
   const [checklist, setChecklist] = useState([]);
   const [checkItem, setCheckItem] = useState("");
+  const [aiInfo, setAiInfo] = useState(null);
   const navigate = useNavigate();
 
-  const handleChange = e => {
-    setTask({ ...task, [e.target.name]: e.target.value });
-  };
+  const handleChange = e => setTask({ ...task, [e.target.name]: e.target.value });
 
   const addChecklistItem = () => {
     if (checkItem.trim()) {
@@ -27,25 +26,18 @@ const AddTaskPage = ({ token }) => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-
     if (!task.title || !task.dueDate) {
       alert('Title and due date are required');
       return;
     }
 
-    const fullTask = {
-      ...task,
-      dueDate: new Date(task.dueDate).toISOString(),
-      checklist,
-    };
-
     try {
+      const fullTask = { ...task, dueDate: new Date(task.dueDate).toISOString(), checklist };
       const res = await createTask(fullTask, token);
       if (res?._id) {
-        navigate("/");
-      } else {
-        alert("Failed to create task");
-      }
+        setAiInfo({ risk: res.aiRisk, suggestion: res.aiSuggestion });
+        navigate("/"); 
+      } else alert("Failed to create task");
     } catch (error) {
       console.error('Task creation error:', error);
       alert("Error creating task: " + (error.message || 'Unknown error'));
@@ -81,6 +73,14 @@ const AddTaskPage = ({ token }) => {
 
         <button type="submit">Create Task</button>
       </form>
+
+      {aiInfo && (
+        <div style={{ marginTop: 20, padding: 10, border: "1px solid #ccc", borderRadius: 6 }}>
+          <h4>🤖 AI Analysis</h4>
+          <p>⚠️ Risk: {aiInfo.risk}</p>
+          <p>💡 Suggestion: {aiInfo.suggestion}</p>
+        </div>
+      )}
     </div>
   );
 };

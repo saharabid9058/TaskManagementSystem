@@ -109,3 +109,20 @@ export const deleteTask = async (taskId) => {
     console.error('Delete task failed:', error.message);
   }
 };
+// AI search
+export const aiSearchTasks = async (query, token) => {
+  const response = await fetch(`${API_URL_TASKS}/search`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ query })
+  });
+  return response.json();
+};
+
+// AI explanation
+export const aiExplainTask = async (id, token) => {
+  const response = await fetch(`${API_URL_TASKS}/${id}/explain`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.json();
+};
